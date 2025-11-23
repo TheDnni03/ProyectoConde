@@ -1,0 +1,20 @@
+version: "3.8"
+
+services:
+  usuarios-api:
+    build:
+      context: ./services/usuarios-api
+      dockerfile: Dockerfile
+    container_name: usuarios-api-service
+    ports:
+      - "8001:80"
+    environment:
+      - JWT_SECRET=${JWT_SECRET}
+      - FIREBASE_DB_URL=${FIREBASE_DB_URL}
+      - FIREBASE_CREDENTIALS_PATH=/var/www/html/config/firebase_credentials.json
+    networks:
+      - microservicios
+
+networks:
+  microservicios:
+    driver: bridge
