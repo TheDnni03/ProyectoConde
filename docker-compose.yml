@@ -15,6 +15,23 @@ services:
     networks:
       - microservicios
 
+  pedidos-api:
+    build:
+      context: ./services/pedidos-api
+      dockerfile: Dockerfile
+    container_name: pedidos-api-service
+    environment:
+      - FIREBASE_CREDENTIALS_FILE=/app/firebase_credentials.json
+      - FIREBASE_DB_URL=https://proyecto-python-bb82f-default-rtdb.firebaseio.com/
+      - JWT_SECRET=duBbPHwCJ9Cw0xa32zWFYPanCP5DYkmxuDRK5g55bmGF3OOGpg8mFgeyP9UgmEJg
+      - JWT_ALGORITHM=HS256
+    ports:
+      - "5001:5001"
+    volumes:
+      - ./services/pedidos-api:/app
+    networks:
+      - microservicios
+
 networks:
   microservicios:
     driver: bridge
