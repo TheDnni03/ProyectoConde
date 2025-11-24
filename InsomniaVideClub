@@ -1,0 +1,143 @@
+type: collection.insomnia.rest/5.0
+name: Tadeo
+meta:
+  id: wrk_01e3a6e3cbf043e197091e90c7cd0ac4
+  created: 1763530298799
+  modified: 1763530298799
+  description: ""
+collection:
+  - url: http://localhost:5000/pedidos/2
+    name: Actualizar Pedido
+    meta:
+      id: req_cf444613cfc94434a3daaa09a2541b2d
+      created: 1763530439552
+      modified: 1763533704389
+      isPrivate: false
+      description: ""
+      sortKey: -1763530439552
+    method: PUT
+    body:
+      mimeType: application/json
+      text: |
+        {
+          "estado": "en_proceso"
+        }
+    headers:
+      - name: Content-Type
+        value: application/json
+      - name: User-Agent
+        value: insomnia/12.0.0
+    settings:
+      renderRequestBody: true
+      encodeUrl: true
+      followRedirects: global
+      cookies:
+        send: true
+        store: true
+      rebuildPath: true
+  - url: http://localhost:5000/pedidos
+    name: Crear Pedido
+    meta:
+      id: req_8cb0fd37785c48e58bb11053263b39cc
+      created: 1763531621294
+      modified: 1763532260637
+      isPrivate: false
+      description: ""
+      sortKey: -1763531621294
+    method: POST
+    body:
+      mimeType: application/json
+      text: |
+        {
+          "usuario": "Jeimi",
+          "productos": ["Album: DtMf", "Genero: Musica"]
+        }
+    headers:
+      - name: Content-Type
+        value: application/json
+      - name: User-Agent
+        value: insomnia/12.0.0
+    settings:
+      renderRequestBody: true
+      encodeUrl: true
+      followRedirects: global
+      cookies:
+        send: true
+        store: true
+      rebuildPath: true
+  - url: http://localhost:5000/pedidos/2
+    name: Obtener Pedido (ID)
+    meta:
+      id: req_8130ae9f158842ea91c1a183051a9a1a
+      created: 1763531856067
+      modified: 1763532299208
+      isPrivate: false
+      description: ""
+      sortKey: -1763531856067
+    method: GET
+    headers:
+      - name: User-Agent
+        value: insomnia/12.0.0
+    settings:
+      renderRequestBody: true
+      encodeUrl: true
+      followRedirects: global
+      cookies:
+        send: true
+        store: true
+      rebuildPath: true
+  - url: http://localhost:5000/pedidos/usuario/tadeo
+    name: Listar Usuario
+    meta:
+      id: req_3d43e021537847aa99780c4930f9abbb
+      created: 1763531982925
+      modified: 1763532091046
+      isPrivate: false
+      description: ""
+      sortKey: -1763531982925
+    method: GET
+    headers:
+      - name: User-Agent
+        value: insomnia/12.0.0
+    settings:
+      renderRequestBody: true
+      encodeUrl: true
+      followRedirects: global
+      cookies:
+        send: true
+        store: true
+      rebuildPath: true
+  - url: http://localhost:5000/pedidos/1
+    name: Cancelar Pedido
+    meta:
+      id: req_3b28c59a4a7c44c5b69611008f05919c
+      created: 1763532165506
+      modified: 1763532237367
+      isPrivate: false
+      description: ""
+      sortKey: -1763532165506
+    method: DELETE
+    headers:
+      - name: User-Agent
+        value: insomnia/12.0.0
+    settings:
+      renderRequestBody: true
+      encodeUrl: true
+      followRedirects: global
+      cookies:
+        send: true
+        store: true
+      rebuildPath: true
+cookieJar:
+  name: Default Jar
+  meta:
+    id: jar_7a3dbe85640f60677af9be221d75f32bf9bc6f32
+    created: 1763530298803
+    modified: 1763530298803
+environments:
+  name: Base Environment
+  meta:
+    id: env_7a3dbe85640f60677af9be221d75f32bf9bc6f32
+    created: 1763530298801
+    modified: 1763530298801
+    isPrivate: false

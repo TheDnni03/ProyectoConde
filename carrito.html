@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Carrito</title>
+    <link rel="stylesheet" href="carrito.css">
+</head>
+<body>
+
+    <div class="contenedor">
+
+        <h1>🛒 Tu carrito</h1>
+
+        <div id="carrito-lista" class="lista"></div>
+
+        <div class="acciones">
+            <button id="vaciar" class="btn rojo">Vaciar carrito</button>
+
+            <!-- NUEVO BOTÓN -->
+            <a href="compra.html" class="btn verde">Comprar carrito</a>
+
+            <a href="catalogo.html" class="btn azul">Regresar al catálogo</a>
+        </div>
+
+    </div>
+
+<script>
+/* ============================
+     UTILIDADES DEL CARRITO
+   ============================ */
+
+function cargarCarrito() {
+    const data = localStorage.getItem("carrito");
+    return data ? JSON.parse(data) : [];
+}
+
+function guardarCarrito(carrito) {
+    localStorage.setItem("carrito", JSON.stringify(carrito));
+}
+
+/* ============================
+       RENDER DE PRODUCTOS
+   ============================ */
+
+function renderCarrito() {
+    const cont = document.getElementById("carrito-lista");
+    let carrito = cargarCarrito();
+
+    cont.innerHTML = "";
+
+    if (carrito.length === 0) {
+        cont.innerHTML = `<p class="vacio">Aún no has agregado nada 👀</p>`;
+        return;
+    }
+
+    carrito.forEach(item => {
+        const div = document.createElement("div");
+        div.className = "item";
+
+        div.innerHTML = `
+            <div>
+                <h3>${item.name}</h3>
+                <p>ID: ${item.id}</p>
+                <p>Cantidad: <strong>${item.cantidad}</strong></p>
+            </div>
+
+            <button class="eliminar" data-id="${item.id}">❌</button>
+        `;
+
+        cont.appendChild(div);
+    });
+
+    // Botones eliminar
+    document.querySelectorAll(".eliminar").forEach(btn => {
+        btn.addEventListener("click", e => {
+            let id = e.target.dataset.id;
+            let carrito = cargarCarrito();
+            carrito = carrito.filter(p => p.id !== id);
+            guardarCarrito(carrito);
+            renderCarrito();
+        });
+    });
+}
+
+/* ============================
+        BOTÓN VACIAR
+   ============================ */
+
+document.getElementById("vaciar").addEventListener("click", () => {
+    localStorage.removeItem("carrito");
+    renderCarrito();
+});
+
+/* ============================
+        INICIALIZAR
+   ============================ */
+renderCarrito();
+</script>
+
+</body>
+</html>

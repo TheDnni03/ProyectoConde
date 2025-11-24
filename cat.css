@@ -1,0 +1,215 @@
+/* cat.css - catalogo pulido por Tadeo
+   - fondo gris neon + blur
+   - carrusel centrado con prev/next parcial
+   - miniaturas 80x120
+   - search bar, add-to-cart (zoom) y cart icon
+*/
+
+/* variables */
+:root{
+  --bg-start: #f6f8fa;
+  --bg-end: #eef2f5;
+  --accent-cyan: #00ccff;
+  --accent-orange: #ff8c00;
+  --glass: rgba(255,255,255,0.65);
+}
+
+/* body / fondo */
+*{box-sizing:border-box}
+html,body{
+  height:100%;
+  margin:0;
+  font-family: "Segoe UI", Roboto, Arial, sans-serif;
+  background: linear-gradient(180deg,var(--bg-start),var(--bg-end));
+  color:#111;
+  -webkit-font-smoothing:antialiased;
+}
+
+/* soft frosted overlay */
+.page-blur{
+  position:fixed; inset:0; pointer-events:none;
+  background: radial-gradient(circle at 30% 20%, rgba(255,255,255,0.55), rgba(240,245,248,0.3) 30%, transparent 60%);
+  backdrop-filter: blur(10px) saturate(120%);
+  z-index:0;
+}
+
+/* wrapper */
+.wrapper{
+  position:relative;
+  z-index:2;
+  min-height:100vh;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  padding:36px 12px 80px;
+}
+
+/* CART ICON (top-right) */
+.cart-link{
+  position:fixed;
+  top:18px;
+  right:20px;
+  z-index:60;
+  background: var(--glass);
+  padding:10px 12px;
+  border-radius:12px;
+  border:1px solid rgba(0,0,0,0.06);
+  box-shadow: 0 8px 26px rgba(0,0,0,0.08);
+  backdrop-filter: blur(8px);
+  text-decoration:none;
+  color:#111;
+  font-size:20px;
+}
+
+/* Search */
+.search-wrap{
+  width:100%;
+  display:flex;
+  justify-content:center;
+  margin-bottom:22px;
+}
+.search-box{
+  width:760px;
+  max-width:95%;
+  display:flex;
+  align-items:center;
+  gap:10px;
+  background: var(--glass);
+  padding:12px 16px;
+  border-radius:999px;
+  border:1px solid rgba(0,0,0,0.04);
+  box-shadow: 0 10px 30px rgba(0,0,0,0.06);
+  backdrop-filter: blur(8px);
+}
+.search-box input{
+  flex:1;
+  border:0; outline:0; background:transparent; font-size:16px; color:#111;
+}
+.search-box button{
+  background: linear-gradient(180deg,var(--accent-cyan), #00b8e6);
+  border:0;
+  padding:10px 14px;
+  border-radius:999px;
+  color:#001;
+  cursor:pointer;
+  font-weight:700;
+  box-shadow: 0 10px 30px rgba(0,204,255,0.12);
+}
+
+/* Carousel area */
+.carousel-wrap{
+  width:100%;
+  max-width:920px;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  margin: 6px auto 18px;
+  position:relative;
+}
+
+/* Outer container to crop nicely and allow partial prev/next */
+.carousel-viewport{
+  width: 420px;              /* visible area */
+  height: 160px;
+  overflow: visible;        /* we want partial prev/next visible */
+  position:relative;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+
+/* Track: we will translate this to center items */
+.carousel-track{
+  display:flex;
+  gap: 18px;
+  align-items:center;
+  transition: transform 480ms cubic-bezier(.22,.9,.38,1);
+  will-change: transform;
+  padding: 0 18px;
+}
+
+/* Each slide (thumbnail) */
+.slide{
+  flex: 0 0 auto;
+  width: 80px;
+  height: 120px;
+  border-radius:10px;
+  overflow:hidden;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  transform-origin:center center;
+  transition: transform 300ms ease, opacity 300ms ease, box-shadow 300ms ease;
+  opacity:0.7;
+}
+.slide img{
+  width:80px; height:120px; object-fit:cover; display:block;
+  border-radius:8px;
+}
+
+/* Active center slide bigger + glow */
+.slide.active{
+  transform: scale(2.15);
+  z-index:5;
+  opacity:1;
+}
+.slide.active img{
+  box-shadow: 0 20px 60px rgba(0,0,0,0.28), 0 0 30px rgba(0,204,255,0.08);
+  border-radius:12px;
+}
+
+/* Prev / next arrows */
+.nav-btn{
+  position:absolute;
+  top:50%;
+  transform:translateY(-50%);
+  width:44px;
+  height:44px;
+  border-radius:50%;
+  border:0;
+  background: rgba(0,0,0,0.5);
+  color:#fff;
+  font-size:20px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  cursor:pointer;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.22);
+  z-index:30;
+}
+.nav-btn.left{ left: -54px; }  /* away from viewport for style */
+.nav-btn.right{ right: -54px; }
+
+/* Add to cart button */
+.controls{
+  width:100%;
+  display:flex;
+  justify-content:center;
+  margin-top:10px;
+}
+.add-btn{
+  background: linear-gradient(180deg, rgba(255,165,50,0.98), rgba(255,140,0,1));
+  color:#051018;
+  padding:12px 22px;
+  border-radius:12px;
+  border:0;
+  font-weight:800;
+  cursor:pointer;
+  box-shadow: 0 14px 40px rgba(255,140,0,0.18), inset 0 -3px 6px rgba(0,0,0,0.06);
+  backdrop-filter: blur(6px);
+  transition: transform 180ms ease, box-shadow 180ms ease;
+}
+.add-btn:hover{ transform: translateY(-4px); }
+.add-btn.zoom{ transform: scale(1.14); box-shadow: 0 30px 80px rgba(255,140,0,0.36); }
+
+/* Dots */
+.dots{ display:flex; gap:8px; justify-content:center; margin-top:14px; }
+.dot{ width:8px; height:8px; border-radius:50%; background: rgba(0,0,0,0.12); border:0; }
+.dot.active{ background:var(--accent-cyan); box-shadow: 0 0 10px rgba(0,204,255,0.12); }
+
+/* responsive */
+@media (max-width:640px){
+  .carousel-viewport{ width: 320px; height: 140px; }
+  .nav-btn.left{ left:-40px } .nav-btn.right{ right:-40px }
+  .search-box{ width:92% }
+}

@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Plataforma de Suscripción</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+    <div class="background-slider">
+        <div class="slide active"></div>
+        <div class="slide"></div>
+        <div class="slide"></div>
+    </div>
+
+    <div class="overlay"></div>
+
+    <div class="content">
+        <h1 class="title">Tu Mundo de Lectura y Audio en un Solo Lugar</h1>
+        <p class="subtitle">Accede ilimitadamente a revistas, periódicos, audiolibros, podcasts y más.  
+            <br> Todo en una experiencia futurista.</p>
+
+<div class="buttons">
+    <a href="registro.html" class="btn neon neon-pink">Registrarse</a>
+    <a href="login.html" class="btn neon neon-blue">Iniciar Sesión</a>
+</div>
+
+<a href="catalogo.html" class="catalog-btn neon-purple">Ver Catálogo</a>
+
+    </div>
+
+    <script>
+        const slides = document.querySelectorAll('.slide');
+        let current = 0;
+
+        function changeSlide() {
+            slides[current].classList.remove('active');
+            current = (current + 1) % slides.length;
+            slides[current].classList.add('active');
+        }
+
+        setInterval(changeSlide, 4000);
+    </script>
+
+</body>
+</html>
