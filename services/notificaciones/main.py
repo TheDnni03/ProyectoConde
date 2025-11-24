@@ -12,7 +12,7 @@ from firebase_config import get_webhooks_ref, get_events_ref
 # Config
 # =========================
 
-INTERNAL_TOKEN = os.getenv("INTERNAL_TOKEN", "super-secreto")  # mismo en los otros servicios
+INTERNAL_TOKEN = os.getenv("JWT_SECRET", "super-secreto")  # mismo en los otros servicios
 MAX_RETRIES = int(os.getenv("WEBHOOK_MAX_RETRIES", "3"))
 TIMEOUT = float(os.getenv("WEBHOOK_TIMEOUT", "5.0"))
 

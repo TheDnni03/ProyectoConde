@@ -8,7 +8,7 @@ use Kreait\Firebase\Factory;
 use Kreait\Firebase\Database;
 use App\Middleware\JwtMiddleware;
 
-$dotenv = Dotenv::createImmutable(__DIR__ . '/..');
+$dotenv = Dotenv::createMutable(__DIR__ . '/..');
 $dotenv->load();
 
 $jwtSecret         = $_ENV['JWT_SECRET']        ?? 'secret';

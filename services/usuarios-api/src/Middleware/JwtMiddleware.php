@@ -1,51 +1,61 @@
 <?php
-// src/middleware/JwtMiddleware.php
-declare(strict_types=1);
 
 namespace App\Middleware;
 
 use Firebase\JWT\JWT;
 use Firebase\JWT\Key;
-use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
-use Psr\Http\Server\MiddlewareInterface;
-use Psr\Http\Server\RequestHandlerInterface;
+use Psr\Http\Server\RequestHandlerInterface as RequestHandler;
+use Psr\Http\Message\ResponseInterface as Response;
+use Slim\Psr7\Response as SlimResponse;
 
-class JwtMiddleware implements MiddlewareInterface
+class JwtMiddleware
 {
-    private string $jwtSecret;
+    private string $secret;
 
-    public function __construct(string $jwtSecret)
+    public function __construct(string $secret)
     {
-        $this->jwtSecret = $jwtSecret;
+        $this->secret = $secret;
     }
 
-    public function process(Request $request, RequestHandlerInterface $handler): Response
+    public function __invoke(Request $request, RequestHandler $handler): Response
     {
         $authHeader = $request->getHeaderLine('Authorization');
 
-        if (!preg_match('/Bearer\s+(\S+)/i', $authHeader, $matches)) {
-            $response = new \Slim\Psr7\Response();
+        if (!$authHeader || stripos($authHeader, 'Bearer ') !== 0) {
+            $response = new SlimResponse();
             $response->getBody()->write(json_encode([
-                'error' => 'Token no enviado'
+                'error'   => 'Token requerido',
+                'details' => 'El encabezado Authorization debe tener el formato: Bearer <token>',
             ]));
-            return $response->withStatus(401)
+
+            return $response
+                ->withStatus(401)
                 ->withHeader('Content-Type', 'application/json');
         }
 
-        $token = $matches[1];
+        $tokenString = trim(substr($authHeader, 7));
 
         try {
-            $decoded = JWT::decode($token, new Key($this->jwtSecret, 'HS256'));
+            if ($this->secret === '') {
+                throw new \RuntimeException('JWT_SECRET vacío en el middleware');
+            }
+
+            $decoded = JWT::decode($tokenString, new Key($this->secret, 'HS256'));
+
+            // Guardamos el token decodificado en el request
             $request = $request->withAttribute('token', $decoded);
+
             return $handler->handle($request);
         } catch (\Throwable $e) {
-            $response = new \Slim\Psr7\Response();
+            $response = new SlimResponse();
             $response->getBody()->write(json_encode([
                 'error'   => 'Token inválido',
-                'details' => $e->getMessage()
+                'details' => $e->getMessage(),
             ]));
-            return $response->withStatus(401)
+
+            return $response
+                ->withStatus(401)
                 ->withHeader('Content-Type', 'application/json');
         }
     }
