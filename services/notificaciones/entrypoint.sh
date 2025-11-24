@@ -1,0 +1,5 @@
+#!/bin/sh
+set -e
+
+# Lanzar la app FastAPI
+uvicorn main:app --host 0.0.0.0 --port 7001

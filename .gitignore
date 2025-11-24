@@ -1,7 +1,10 @@
 # Firebase service account keys
 firebase/*.json
 services/usuarios-api/config/firebase_credentials.json
-services/pedidos-api/app/firebase_credentials.json
+services/pedidos-api/firebase_credentials.json
+services/reportes-api/config/firebase_credentials.json
+services/notificaciones/config/firebase_credentials.json
+
 
 # En general, cualquier credencial
 *.key
