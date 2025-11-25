@@ -1,11 +1,3 @@
-/* cat.css - catalogo pulido por Tadeo
-   - fondo gris neon + blur
-   - carrusel centrado con prev/next parcial
-   - miniaturas 80x120
-   - search bar, add-to-cart (zoom) y cart icon
-*/
-
-/* variables */
 :root{
   --bg-start: #f6f8fa;
   --bg-end: #eef2f5;
@@ -14,7 +6,6 @@
   --glass: rgba(255,255,255,0.65);
 }
 
-/* body / fondo */
 *{box-sizing:border-box}
 html,body{
   height:100%;
@@ -25,7 +16,6 @@ html,body{
   -webkit-font-smoothing:antialiased;
 }
 
-/* soft frosted overlay */
 .page-blur{
   position:fixed; inset:0; pointer-events:none;
   background: radial-gradient(circle at 30% 20%, rgba(255,255,255,0.55), rgba(240,245,248,0.3) 30%, transparent 60%);
@@ -33,7 +23,6 @@ html,body{
   z-index:0;
 }
 
-/* wrapper */
 .wrapper{
   position:relative;
   z-index:2;
@@ -44,7 +33,6 @@ html,body{
   padding:36px 12px 80px;
 }
 
-/* CART ICON (top-right) */
 .cart-link{
   position:fixed;
   top:18px;
@@ -61,7 +49,6 @@ html,body{
   font-size:20px;
 }
 
-/* Search */
 .search-wrap{
   width:100%;
   display:flex;
@@ -96,7 +83,6 @@ html,body{
   box-shadow: 0 10px 30px rgba(0,204,255,0.12);
 }
 
-/* Carousel area */
 .carousel-wrap{
   width:100%;
   max-width:920px;
@@ -107,18 +93,16 @@ html,body{
   position:relative;
 }
 
-/* Outer container to crop nicely and allow partial prev/next */
 .carousel-viewport{
-  width: 420px;              /* visible area */
+  width: 420px;
   height: 160px;
-  overflow: visible;        /* we want partial prev/next visible */
+  overflow: visible;
   position:relative;
   display:flex;
   align-items:center;
   justify-content:center;
 }
 
-/* Track: we will translate this to center items */
 .carousel-track{
   display:flex;
   gap: 18px;
@@ -128,7 +112,6 @@ html,body{
   padding: 0 18px;
 }
 
-/* Each slide (thumbnail) */
 .slide{
   flex: 0 0 auto;
   width: 80px;
@@ -147,7 +130,6 @@ html,body{
   border-radius:8px;
 }
 
-/* Active center slide bigger + glow */
 .slide.active{
   transform: scale(2.15);
   z-index:5;
@@ -158,7 +140,6 @@ html,body{
   border-radius:12px;
 }
 
-/* Prev / next arrows */
 .nav-btn{
   position:absolute;
   top:50%;
@@ -177,10 +158,9 @@ html,body{
   box-shadow: 0 10px 30px rgba(0,0,0,0.22);
   z-index:30;
 }
-.nav-btn.left{ left: -54px; }  /* away from viewport for style */
+.nav-btn.left{ left: -54px; }
 .nav-btn.right{ right: -54px; }
 
-/* Add to cart button */
 .controls{
   width:100%;
   display:flex;
@@ -202,12 +182,10 @@ html,body{
 .add-btn:hover{ transform: translateY(-4px); }
 .add-btn.zoom{ transform: scale(1.14); box-shadow: 0 30px 80px rgba(255,140,0,0.36); }
 
-/* Dots */
 .dots{ display:flex; gap:8px; justify-content:center; margin-top:14px; }
 .dot{ width:8px; height:8px; border-radius:50%; background: rgba(0,0,0,0.12); border:0; }
 .dot.active{ background:var(--accent-cyan); box-shadow: 0 0 10px rgba(0,204,255,0.12); }
 
-/* responsive */
 @media (max-width:640px){
   .carousel-viewport{ width: 320px; height: 140px; }
   .nav-btn.left{ left:-40px } .nav-btn.right{ right:-40px }

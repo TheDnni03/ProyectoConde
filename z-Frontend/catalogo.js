@@ -1,4 +1,3 @@
-// Lista de productos del carrusel
 const productos = [
     { id: 1, nombre: "Podcast", img: "https://images.unsplash.com/photo-1581092335075-922b6f894a2c?q=80&w=1000" },
     { id: 2, nombre: "Audiolibro", img: "https://images.unsplash.com/photo-1524995997946-a1c2e315a42f?q=80&w=1000" },
@@ -7,7 +6,6 @@ const productos = [
 
 let index = 0;
 
-// Carrusel automático
 function mostrarCarrusel() {
     const img = document.querySelector(".carousel-image");
     img.src = productos[index].img;
@@ -16,7 +14,6 @@ function mostrarCarrusel() {
 }
 setInterval(mostrarCarrusel, 3000);
 
-// Agregar al carrito
 document.querySelector("#addCart").addEventListener("click", () => {
     let carrito = JSON.parse(localStorage.getItem("carrito")) || [];
 
@@ -24,13 +21,11 @@ document.querySelector("#addCart").addEventListener("click", () => {
 
     localStorage.setItem("carrito", JSON.stringify(carrito));
 
-    // Efecto de zoom
     const btn = document.querySelector("#addCart");
     btn.classList.add("zoom");
     setTimeout(() => btn.classList.remove("zoom"), 300);
 });
 
-// Ir al carrito
 document.querySelector("#goCart").addEventListener("click", () => {
     window.location.href = "carrito.html";
 });

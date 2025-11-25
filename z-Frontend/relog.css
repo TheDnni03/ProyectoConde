@@ -39,7 +39,6 @@ body {
     background-image: url("https://www.shutterstock.com/image-vector/trendy-halftone-collage-podcast-broadcast-260nw-2597695059.jpg"); 
 }
 
-/* Clase que activa cada slide */
 .active {
     opacity: 1;
 }
@@ -61,14 +60,13 @@ body {
     z-index: 10;
 }
 
-/* Título */
 .register-box h2 {
     margin-bottom: 20px;
     color: #fff;
     text-shadow: 0 0 10px #6ecbff;
 }
 
-/* ========== INPUTS ========== */
+
 .input-group {
     position: relative;
     width: 100%;

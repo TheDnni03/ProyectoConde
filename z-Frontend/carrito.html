@@ -25,9 +25,6 @@
     </div>
 
 <script>
-/* ============================
-     UTILIDADES DEL CARRITO
-   ============================ */
 
 function cargarCarrito() {
     const data = localStorage.getItem("carrito");
@@ -37,10 +34,6 @@ function cargarCarrito() {
 function guardarCarrito(carrito) {
     localStorage.setItem("carrito", JSON.stringify(carrito));
 }
-
-/* ============================
-       RENDER DE PRODUCTOS
-   ============================ */
 
 function renderCarrito() {
     const cont = document.getElementById("carrito-lista");
@@ -70,7 +63,6 @@ function renderCarrito() {
         cont.appendChild(div);
     });
 
-    // Botones eliminar
     document.querySelectorAll(".eliminar").forEach(btn => {
         btn.addEventListener("click", e => {
             let id = e.target.dataset.id;
@@ -82,18 +74,11 @@ function renderCarrito() {
     });
 }
 
-/* ============================
-        BOTÓN VACIAR
-   ============================ */
-
 document.getElementById("vaciar").addEventListener("click", () => {
     localStorage.removeItem("carrito");
     renderCarrito();
 });
 
-/* ============================
-        INICIALIZAR
-   ============================ */
 renderCarrito();
 </script>
 

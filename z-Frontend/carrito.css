@@ -60,7 +60,6 @@ h1 {
     transition: 0.2s ease;
 }
 
-/* 🔴 Rojo neón */
 .rojo {
     background: rgba(255, 50, 50, 0.7);
     box-shadow: 0 0 10px rgba(255, 50, 50, 0.9);
@@ -70,7 +69,6 @@ h1 {
     transform: scale(1.05);
 }
 
-/* 🟢 Verde neón */
 .verde {
     background: rgba(0, 255, 150, 0.7);
     box-shadow: 0 0 10px rgba(0, 255, 150, 1);
@@ -80,7 +78,6 @@ h1 {
     transform: scale(1.05);
 }
 
-/* 🔵 Azul neón */
 .azul {
     background: rgba(80, 160, 255, 0.7);
     box-shadow: 0 0 10px rgba(80, 160, 255, 1);

@@ -12,7 +12,6 @@
   <a class="cart-link" href="carrito.html" title="Ver carrito">🛒</a>
 
   <div class="wrapper">
-    <!-- Search -->
     <div class="search-wrap">
       <div class="search-box">
         <input id="q" type="text" placeholder="Buscar por nombre o ID (ej: podcast o 1)" />
@@ -20,13 +19,11 @@
       </div>
     </div>
 
-    <!-- Carousel -->
     <div class="carousel-wrap">
       <button class="nav-btn left" id="prevBtn" aria-label="Anterior">&#10094;</button>
 
       <div class="carousel-viewport" role="region" aria-label="Catálogo">
         <div class="carousel-track" id="track">
-          <!-- slides: data-id y data-name -->
           <div class="slide" data-id="1" data-name="podcast">
             <img src="https://www.shutterstock.com/image-vector/trendy-halftone-collage-podcast-broadcast-260nw-2597695059.jpg" alt="Podcast">
           </div>
@@ -44,7 +41,6 @@
       <button class="nav-btn right" id="nextBtn" aria-label="Siguiente">&#10095;</button>
     </div>
 
-    <!-- controls -->
     <div class="controls">
       <button id="addBtn" class="add-btn">Agregar al carrito</button>
     </div>
@@ -53,7 +49,6 @@
   </div>
 
 <script>
-/* JS: carrusel centrado, autoplay, búsqueda, add-to-cart */
 (() => {
   const track = document.getElementById('track');
   const slides = Array.from(track.querySelectorAll('.slide'));
@@ -66,9 +61,8 @@
 
   let index = 0;
   let autoplay = null;
-  const gap = 18; // same as CSS gap
+  const gap = 18;
 
-  /* build dots */
   slides.forEach((s, i) => {
     const b = document.createElement('button');
     b.className = 'dot' + (i===0 ? ' active' : '');
@@ -82,7 +76,6 @@
   }
 
   function computeSlideSizes(){
-    // width + gap
     const rect0 = slides[0].getBoundingClientRect();
     const totalWidth = rect0.width + gap;
     return totalWidth;
@@ -96,12 +89,10 @@
     const slideW = slideRect.width;
     const spacing = computeSlideSizes();
 
-    // compute translate: move track so that current slide center aligns with viewport center
     const centerOffset = (viewportW / 2) - (slideW / 2);
     const translateX = centerOffset - index * spacing;
     track.style.transform = `translateX(${translateX}px)`;
 
-    // active classes
     slides.forEach((s,i)=>{
       s.classList.toggle('active', i===index);
     });
@@ -125,14 +116,12 @@
   prevBtn.addEventListener('click', prev);
   nextBtn.addEventListener('click', next);
 
-  // autoplay
   function startAutoplay(){
     if (autoplay) clearInterval(autoplay);
     autoplay = setInterval(()=> next(), 3000);
   }
   function restartAutoplay(){ startAutoplay(); }
 
-  // add to cart (stores in localStorage)
   addBtn.addEventListener('click', ()=>{
     const active = slides[index];
     const item = {
@@ -143,12 +132,10 @@
     let c = JSON.parse(localStorage.getItem('cart') || '[]');
     c.push(item);
     localStorage.setItem('cart', JSON.stringify(c));
-    // visual feedback (zoom)
     addBtn.classList.add('zoom');
     setTimeout(()=> addBtn.classList.remove('zoom'), 300);
   });
 
-  // search by name or id
   function search(qs){
     const query = String(qs).trim().toLowerCase();
     if (!query) return;
@@ -158,14 +145,12 @@
   searchBtn.addEventListener('click', ()=> search(q.value));
   q.addEventListener('keydown', e=> { if (e.key === 'Enter') search(q.value); });
 
-  // responsive: recenter after fonts/images load
   window.addEventListener('load', ()=> {
     centerTrack();
     startAutoplay();
   });
   window.addEventListener('resize', centerTrack);
 
-  // initial
   centerTrack();
 })();
 </script>
