@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8" />
+    <title>Iniciar Sesión</title>
+    <link rel="stylesheet" href="relog.css">
+</head>
+
+<body>
+
+   
+    <div class="background-slider">
+        <div class="slide active"></div>
+        <div class="slide"></div>
+    </div>
+
+  
+    <div class="register-box">
+        <h2>Iniciar Sesión</h2>
+
+        <div class="input-group">
+            <input type="email" placeholder="Correo electrónico">
+        </div>
+
+
+        <div class="input-group">
+            <input type="password" id="loginpass" placeholder="Contraseña">
+            <span class="toggle-eye" onclick="togglePass('loginpass', this)">👁</span>
+        </div>
+
+        <a href="catalogo.html" class="login-btn">Entrar</a>
+    </div>
+
+
+    <script>
+        function togglePass(id, icon) {
+            const input = document.getElementById(id);
+            input.type = input.type === "password" ? "text" : "password";
+        }
+
+        let current = 0;
+        const slides = document.querySelectorAll(".slide");
+
+        setInterval(() => {
+            slides[current].classList.remove("active");
+            current = (current + 1) % slides.length;
+            slides[current].classList.add("active");
+        }, 5000);
+    </script>
+
+</body>
+</html>

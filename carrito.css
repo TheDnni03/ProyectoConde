@@ -1,0 +1,91 @@
+body {
+    background: #0d0d0d;
+    font-family: "Segoe UI", sans-serif;
+    color: white;
+    margin: 0;
+    padding: 0;
+}
+
+.contenedor {
+    max-width: 600px;
+    margin: 40px auto;
+    background: rgba(255,255,255,0.05);
+    padding: 25px;
+    border-radius: 15px;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255,255,255,0.15);
+}
+
+h1 {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.lista .item {
+    display: flex;
+    justify-content: space-between;
+    background: rgba(255,255,255,0.07);
+    padding: 15px;
+    border-radius: 10px;
+    margin-bottom: 12px;
+}
+
+.eliminar {
+    background: #ff4a4a;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.vacio {
+    text-align: center;
+    opacity: 0.8;
+}
+
+.acciones {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 25px;
+}
+
+.btn {
+    padding: 12px 18px;
+    border-radius: 10px;
+    font-weight: bold;
+    text-decoration: none;
+    text-align: center;
+    cursor: pointer;
+    backdrop-filter: blur(8px);
+    transition: 0.2s ease;
+}
+
+/* 🔴 Rojo neón */
+.rojo {
+    background: rgba(255, 50, 50, 0.7);
+    box-shadow: 0 0 10px rgba(255, 50, 50, 0.9);
+}
+
+.rojo:hover {
+    transform: scale(1.05);
+}
+
+/* 🟢 Verde neón */
+.verde {
+    background: rgba(0, 255, 150, 0.7);
+    box-shadow: 0 0 10px rgba(0, 255, 150, 1);
+}
+
+.verde:hover {
+    transform: scale(1.05);
+}
+
+/* 🔵 Azul neón */
+.azul {
+    background: rgba(80, 160, 255, 0.7);
+    box-shadow: 0 0 10px rgba(80, 160, 255, 1);
+}
+
+.azul:hover {
+    transform: scale(1.05);
+}
