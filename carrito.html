@@ -16,8 +16,8 @@
         <div class="acciones">
             <button id="vaciar" class="btn rojo">Vaciar carrito</button>
 
-            <!-- NUEVO BOTÓN -->
-            <a href="compra.html" class="btn verde">Comprar carrito</a>
+            <!-- BOTÓN COMPRAR (con total dinámico) -->
+            <a id="btn-comprar" href="compra.html" class="btn verde">Comprar carrito</a>
 
             <a href="catalogo.html" class="btn azul">Regresar al catálogo</a>
         </div>
@@ -25,76 +25,127 @@
     </div>
 
 <script>
-/* ============================
-     UTILIDADES DEL CARRITO
-   ============================ */
+/* ===========================
+   UTILIDADES DEL CARRITO
+   =========================== */
 
 function cargarCarrito() {
-    const data = localStorage.getItem("carrito");
+    const data = localStorage.getItem("cart");
     return data ? JSON.parse(data) : [];
 }
 
 function guardarCarrito(carrito) {
-    localStorage.setItem("carrito", JSON.stringify(carrito));
+    localStorage.setItem("cart", JSON.stringify(carrito));
 }
 
-/* ============================
-       RENDER DE PRODUCTOS
-   ============================ */
+/* ===========================
+   CÁLCULO DE TOTAL
+   - Usa item.price si existe (número o string)
+   - Si no existe price en item, intenta usar 0
+   =========================== */
+function calcularTotal(carrito) {
+    return carrito.reduce((acc, item) => {
+        const precio = Number(item.price ?? 0) || 0;
+        const cantidad = Number(item.cantidad ?? 1) || 1;
+        return acc + precio * cantidad;
+    }, 0);
+}
 
+function formatearMXN(n) {
+    // Formatea con separador de miles y sin decimales
+    return n.toLocaleString('es-MX', { style: 'currency', currency: 'MXN', minimumFractionDigits: 0, maximumFractionDigits: 0 });
+}
+
+/* ===========================
+   ACTUALIZAR BOTÓN COMPRAR
+   =========================== */
+function actualizarBotonTotal() {
+    const btn = document.getElementById("btn-comprar");
+    const carrito = cargarCarrito();
+    const total = calcularTotal(carrito);
+
+    if (carrito.length === 0) {
+        btn.textContent = "Comprar carrito";
+        btn.removeAttribute('data-total');
+    } else {
+        btn.textContent = `Comprar carrito — ${formatearMXN(total)}`;
+        btn.setAttribute('data-total', total);
+    }
+}
+
+/* ===========================
+   RENDER DEL CARRITO
+   =========================== */
 function renderCarrito() {
     const cont = document.getElementById("carrito-lista");
     let carrito = cargarCarrito();
 
     cont.innerHTML = "";
 
-    if (carrito.length === 0) {
+    if (!carrito || carrito.length === 0) {
         cont.innerHTML = `<p class="vacio">Aún no has agregado nada 👀</p>`;
+        actualizarBotonTotal();
         return;
     }
 
     carrito.forEach(item => {
+        const precioUnit = Number(item.price ?? 0) || 0;
+        const cantidad = Number(item.cantidad ?? 1) || 1;
+        const subtotal = precioUnit * cantidad;
+
         const div = document.createElement("div");
         div.className = "item";
 
         div.innerHTML = `
-            <div>
-                <h3>${item.name}</h3>
-                <p>ID: ${item.id}</p>
-                <p>Cantidad: <strong>${item.cantidad}</strong></p>
+            <div class="info">
+                <img src="${item.img}" alt="${item.name || 'Producto'}" class="thumb">
+                <div class="meta">
+                    <h3>${item.name ?? 'Sin nombre'}</h3>
+                    <p>ID: ${item.id ?? '-'}</p>
+                    <p>Precio unitario: <strong>${formatearMXN(precioUnit)}</strong></p>
+                    <p>Cantidad: <strong>${cantidad}</strong></p>
+                    <p>Subtotal: <strong>${formatearMXN(subtotal)}</strong></p>
+                </div>
             </div>
 
-            <button class="eliminar" data-id="${item.id}">❌</button>
+            <div class="acciones-item">
+                <button class="eliminar" data-id="${item.id}">❌</button>
+            </div>
         `;
 
         cont.appendChild(div);
     });
 
-    // Botones eliminar
+    /* Asignar eventos a botones eliminar */
     document.querySelectorAll(".eliminar").forEach(btn => {
         btn.addEventListener("click", e => {
-            let id = e.target.dataset.id;
+            const id = e.currentTarget.dataset.id;
             let carrito = cargarCarrito();
-            carrito = carrito.filter(p => p.id !== id);
+            carrito = carrito.filter(p => String(p.id) !== String(id));
             guardarCarrito(carrito);
-            renderCarrito();
+            renderCarrito();        // re-renderiza
+            actualizarBotonTotal(); // actualiza total
         });
     });
+
+    // Actualizar botón total después de renderizar
+    actualizarBotonTotal();
 }
 
-/* ============================
-        BOTÓN VACIAR
-   ============================ */
-
+/* ===========================
+   VACIAR CARRITO
+   =========================== */
 document.getElementById("vaciar").addEventListener("click", () => {
-    localStorage.removeItem("carrito");
+    localStorage.removeItem("cart");
     renderCarrito();
+    actualizarBotonTotal();
 });
 
-/* ============================
-        INICIALIZAR
-   ============================ */
+/* ===========================
+   INICIALIZAR
+   =========================== */
 renderCarrito();
+actualizarBotonTotal();
 </script>
 
 </body>

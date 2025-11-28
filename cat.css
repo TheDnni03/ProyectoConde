@@ -213,3 +213,25 @@ html,body{
   .nav-btn.left{ left:-40px } .nav-btn.right{ right:-40px }
   .search-box{ width:92% }
 }
+
+/* PRECIO ARRIBA DE CADA SLIDE */
+.precio{
+  position: absolute;
+  top: -22px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(0,0,0,0.7);
+  padding: 3px 8px;
+  border-radius: 6px;
+  color: #fff;
+  font-size: 14px;
+  font-weight: bold;
+  white-space: nowrap;
+  z-index: 20;
+}
+
+/* Ajuste: mover carrusel un poco abajo */
+.carousel-wrap{
+  margin-top: 50px;  /* <- Baja el carrusel sin afectar nada */
+}
+

@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Proceso de compra</title>
+    <link rel="stylesheet" href="compra.css">
+</head>
+<body>
+
+<div class="container">
+
+    <h1>💳 Datos de pago</h1>
+
+    <div class="pago-box">
+        <p class="label">Total a pagar:</p>
+        <p id="total" class="total">$0</p>
+
+        <p class="label">Número de tarjeta del comercio:</p>
+        <p class="tarjeta">4152 5678 8908 2345</p>
+
+        <p class="label">A nombre de:</p>
+        <p class="nombre">Los Pozitos</p>
+    </div>
+
+    <div class="formulario">
+        <h2>Ingresa tus datos</h2>
+
+        <label>Nombre completo del titular:</label>
+        <input type="text" id="nombre" placeholder="Juan Pérez">
+
+        <label>Número de tarjeta:</label>
+        <input type="text" id="tarjeta" placeholder="0000 0000 0000 0000">
+
+        <div class="fila">
+            <div style="flex: 1;">
+                <label>CVV:</label>
+                <input type="text" id="cvv" placeholder="123">
+            </div>
+
+            <div style="flex: 1;">
+                <label>Expiración:</label>
+                <input type="month" id="exp">
+            </div>
+        </div>
+
+        <button id="procesar" class="procesar">Procesar pago</button>
+
+        <a href="catalogo.html" class="volver-cat" style="margin-top:20px; display:block; text-align:center;">
+            ← Regresar al catálogo
+        </a>
+    </div>
+
+</div>
+
+<!-- MODAL DE ÉXITO -->
+<div id="exito" class="exito-oculto">
+    <div class="exito-box">
+        <h2>🎉 Pago exitoso</h2>
+        <a href="catalogo.html" class="volver-cat">Volver al catálogo</a>
+    </div>
+</div>
+
+<script>
+// Cargar carrito
+function cargarCarrito() {
+    const data = localStorage.getItem("cart");
+    return data ? JSON.parse(data) : [];
+}
+
+// Mostrar total
+function mostrarTotal() {
+    let carrito = cargarCarrito();
+    let total = carrito.reduce((acc, p) => acc + p.price * (p.cantidad || 1), 0);
+    document.getElementById("total").textContent = "$" + total;
+}
+
+// Procesar pago
+document.getElementById("procesar").addEventListener("click", () => {
+
+    const nombre = document.getElementById("nombre").value.trim();
+    const tarjeta = document.getElementById("tarjeta").value.trim();
+    const cvv = document.getElementById("cvv").value.trim();
+    const exp = document.getElementById("exp").value;
+
+    if (!nombre || !tarjeta || !cvv || !exp) {
+        alert("Por favor completa todos los campos.");
+        return;
+    }
+
+    // Vacía el carrito
+    localStorage.removeItem("cart");
+
+    // Mostrar modal
+    document.getElementById("exito").classList.remove("exito-oculto");
+});
+
+mostrarTotal();
+</script>
+
+</body>
+</html>
