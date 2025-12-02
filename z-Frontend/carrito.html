@@ -16,7 +16,6 @@
         <div class="acciones">
             <button id="vaciar" class="btn rojo">Vaciar carrito</button>
 
-            <!-- NUEVO BOTÓN -->
             <a href="compra.html" class="btn verde">Comprar carrito</a>
 
             <a href="catalogo.html" class="btn azul">Regresar al catálogo</a>
@@ -27,12 +26,12 @@
 <script>
 
 function cargarCarrito() {
-    const data = localStorage.getItem("carrito");
+    const data = localStorage.getItem("cart");
     return data ? JSON.parse(data) : [];
 }
 
 function guardarCarrito(carrito) {
-    localStorage.setItem("carrito", JSON.stringify(carrito));
+    localStorage.setItem("cart", JSON.stringify(carrito));
 }
 
 function renderCarrito() {
@@ -54,7 +53,7 @@ function renderCarrito() {
             <div>
                 <h3>${item.name}</h3>
                 <p>ID: ${item.id}</p>
-                <p>Cantidad: <strong>${item.cantidad}</strong></p>
+                <p>Cantidad: <strong>${1}</strong></p>
             </div>
 
             <button class="eliminar" data-id="${item.id}">❌</button>
@@ -75,7 +74,7 @@ function renderCarrito() {
 }
 
 document.getElementById("vaciar").addEventListener("click", () => {
-    localStorage.removeItem("carrito");
+    localStorage.removeItem("cart");
     renderCarrito();
 });
 
