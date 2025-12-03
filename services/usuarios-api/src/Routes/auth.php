@@ -23,6 +23,51 @@ $app->get('/', function (Request $request, Response $response) {
     return $response->withHeader('Content-Type', 'application/json');
 });
 
+// ---------------------------------------------------------------------
+// FUNCIÓN AUXILIAR: enviar evento interno a notificaciones-api
+// ---------------------------------------------------------------------
+function send_internal_user_registered_event(int $userId, string $email, string $name): void
+{
+    // IMPORTANTE: dentro de Docker se llama por el nombre del servicio
+    $baseUrl       = getenv('NOTIFICATIONS_BASE_URL') ?: 'http://notificaciones-api:7001';
+    $endpoint      = rtrim($baseUrl, '/') . '/events/user-registered';
+    $internalToken = getenv('JWT_SECRET') ?: 'super-secreto';
+
+    $payload = [
+        'user_id' => (string)$userId,
+        'email'   => $email,
+        'name'    => $name,
+    ];
+
+    try {
+        $ch = curl_init($endpoint);
+        curl_setopt_array($ch, [
+            CURLOPT_POST           => true,
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_HTTPHEADER     => [
+                'Content-Type: application/json',
+                'X-Internal-Token: ' . $internalToken,
+            ],
+            CURLOPT_POSTFIELDS     => json_encode($payload),
+            CURLOPT_CONNECTTIMEOUT => 1,
+            CURLOPT_TIMEOUT        => 2,
+        ]);
+
+        $body   = curl_exec($ch);
+        $err    = curl_error($ch);
+        $status = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        curl_close($ch);
+
+        if ($err) {
+            error_log('[notificaciones] Error cURL user.registered: ' . $err);
+        } else {
+            error_log('[notificaciones] user.registered status=' . $status . ' body=' . $body);
+        }
+    } catch (\Throwable $e) {
+        error_log('[notificaciones] Excepción user.registered: ' . $e->getMessage());
+    }
+}
+
 // ================== REGISTER ==================
 $app->post('/register', function (Request $request, Response $response) use ($database) {
     $data = $request->getParsedBody() ?? [];
@@ -65,7 +110,7 @@ $app->post('/register', function (Request $request, Response $response) use ($da
     // 2) Calcular el siguiente ID numérico
     $existingUsers = $usersRef->getSnapshot()->getValue() ?? [];
 
-    // 1) Validar email duplicado (sin usar índices, filtramos en PHP)
+    // 1) Validar email duplicado
     foreach ($existingUsers as $user) {
         if (isset($user['email']) && strcasecmp($user['email'], $email) === 0) {
             $response->getBody()->write(json_encode([
@@ -80,7 +125,7 @@ $app->post('/register', function (Request $request, Response $response) use ($da
     if (empty($existingUsers)) {
         $newId = 1;
     } else {
-        $ids = array_map('intval', array_keys($existingUsers));
+        $ids  = array_map('intval', array_keys($existingUsers));
         $newId = max($ids) + 1;
     }
 
@@ -93,6 +138,10 @@ $app->post('/register', function (Request $request, Response $response) use ($da
         'name'       => $name,
         'created_at' => (new DateTimeImmutable())->format(DATE_ATOM),
     ]);
+
+    // ---------- AQUÍ DISPARAMOS EL EVENTO AL MICROSERVICIO DE NOTIFICACIONES ----------
+    send_internal_user_registered_event($newId, $email, $name);
+    // -------------------------------------------------------------------------
 
     $response->getBody()->write(json_encode([
         'id'    => $newId,

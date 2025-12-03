@@ -1,3 +1,5 @@
+version: "3.9"
+
 services:
   usuarios-api:
     build:
@@ -52,13 +54,18 @@ services:
     container_name: notificaciones-api-service
     environment:
       - FIREBASE_CREDENTIALS_FILE=/app/config/firebase_credentials.json
-      - FIREBASE_DB_URL=https://notificaciones-db-default-rtdb.firebaseio.com/
+      - FIREBASE_DB_URL=https://notificaciones-e9779-default-rtdb.firebaseio.com
+      - JWT_SECRET=${JWT_SECRET}
+      - WEBHOOK_MAX_RETRIES=3
+      - WEBHOOK_TIMEOUT=5.0
     volumes:
       - ./services/notificaciones/config/firebase_credentials.json:/app/config/firebase_credentials.json
     ports:
       - "7001:7001"
     networks:
       - microservicios
+
+
 
 networks:
   microservicios:

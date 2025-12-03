@@ -25,7 +25,6 @@ app = FastAPI(
     version="1.0.0",
 )
 
-
 # =========================
 # Modelos
 # =========================
@@ -39,7 +38,7 @@ class WebhookIn(BaseModel):
 class WebhookOut(WebhookIn):
     id: str
     active: bool
-    created_at: datetime
+    created_at: str   # lo guardamos como string ISO8601
 
 
 class UserRegisteredEvent(BaseModel):
@@ -59,7 +58,7 @@ class NotificationEvent(BaseModel):
     id: str
     event_type: Literal["user.registered", "order.created"]
     payload: Dict[str, Any]
-    timestamp: datetime
+    timestamp: str    # <-- STRING ISO, NO datetime
 
 
 # =========================
@@ -94,13 +93,15 @@ def register_webhook(webhook: WebhookIn):
     ref = get_webhooks_ref().push()
     webhook_id = ref.key
 
+    created_at = datetime.now(timezone.utc).isoformat()
+
     data = {
         "id": webhook_id,
         "url": str(webhook.url),
         "description": webhook.description,
         "events": webhook.events,
         "active": True,
-        "created_at": datetime.now(timezone.utc).isoformat()
+        "created_at": created_at
     }
     ref.set(data)
 
@@ -123,8 +124,7 @@ def deactivate_webhook(webhook_id: str):
 
 
 # =========================
-# Endpoints que reciben eventos de otros microservicios
-# (USUARIOS / PEDIDOS / REPORTES)
+# Endpoints que reciben eventos internos
 # =========================
 
 @app.post("/events/user-registered", dependencies=[Depends(verify_internal_token)])
@@ -133,14 +133,16 @@ def event_user_registered(
     background_tasks: BackgroundTasks
 ):
     event_id = str(uuid.uuid4())
+    ts = datetime.now(timezone.utc).isoformat()
+
     wrapper = NotificationEvent(
         id=event_id,
         event_type="user.registered",
         payload=event.dict(),
-        timestamp=datetime.now(timezone.utc),
+        timestamp=ts,
     )
 
-    # Guardar en Firebase
+    # Guardar en Firebase (todo es JSON-serializable)
     get_events_ref().child(event_id).set(wrapper.dict())
 
     # Reenvío asíncrono a webhooks externos
@@ -155,11 +157,13 @@ def event_order_created(
     background_tasks: BackgroundTasks
 ):
     event_id = str(uuid.uuid4())
+    ts = datetime.now(timezone.utc).isoformat()
+
     wrapper = NotificationEvent(
         id=event_id,
         event_type="order.created",
         payload=event.dict(),
-        timestamp=datetime.now(timezone.utc),
+        timestamp=ts,
     )
 
     get_events_ref().child(event_id).set(wrapper.dict())
@@ -210,7 +214,7 @@ def dispatch_event_to_webhooks(event: NotificationEvent):
                 body = {
                     "id": event.id,
                     "type": event.event_type,
-                    "timestamp": event.timestamp.isoformat(),
+                    "timestamp": event.timestamp,  # ya viene como string ISO
                     "data": event.payload,
                 }
                 tasks.append(post_with_retries(client, url, body))
