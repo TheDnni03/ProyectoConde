@@ -11,6 +11,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import java.time.Instant;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -25,26 +27,28 @@ public class ReportService {
     @Value("${pedidos.api.url}")
     private String pedidosApiUrl;
 
-    /**
-     * ==============================
-     *  REPORTE DE USUARIOS
-     * ==============================
-     */
+    // ============================================================
+    // 1. REPORTE DE USUARIOS
+    // ============================================================
     public UserReportResponse generateUserReport(String bearerToken) {
 
         HttpHeaders headers = new HttpHeaders();
-        headers.set("Authorization", bearerToken);
+        headers.set(HttpHeaders.AUTHORIZATION, bearerToken);
         HttpEntity<Void> requestEntity = new HttpEntity<>(headers);
 
-        ResponseEntity<List> resp = restTemplate.exchange(
-                usuariosApiUrl + "/users",
+        // Leemos como Object para soportar tanto [ ... ] como { ... }
+        ResponseEntity<Object> resp = restTemplate.exchange(
+                usuariosApiUrl + "/users",   // ajusta si tu endpoint es otro
                 HttpMethod.GET,
                 requestEntity,
-                List.class
+                Object.class
         );
 
-        List<Map<String, Object>> users = resp.getBody();
-        long totalUsers = users != null ? users.size() : 0;
+        Object body = resp.getBody();
+        List<Map<String, Object>> users = extractListFromBody(body,
+                "usuarios", "users", "data");
+
+        long totalUsers = users.size();
 
         // Log en Firebase
         logReport("user_report", Map.of(
@@ -59,34 +63,33 @@ public class ReportService {
         return out;
     }
 
-    /**
-     * ==============================
-     *  REPORTE DE PEDIDOS
-     * ==============================
-     */
+    // ============================================================
+    // 2. REPORTE DE PEDIDOS
+    // ============================================================
     public OrderReportResponse generateOrderReport(String bearerToken) {
 
         HttpHeaders headers = new HttpHeaders();
-        headers.set("Authorization", bearerToken);
+        headers.set(HttpHeaders.AUTHORIZATION, bearerToken);
         HttpEntity<Void> requestEntity = new HttpEntity<>(headers);
 
-        ResponseEntity<List> resp = restTemplate.exchange(
-                pedidosApiUrl + "/orders",
+        ResponseEntity<Object> resp = restTemplate.exchange(
+                pedidosApiUrl + "/orders",   // ajusta si tu endpoint es otro
                 HttpMethod.GET,
                 requestEntity,
-                List.class
+                Object.class
         );
 
-        List<Map<String, Object>> orders = resp.getBody();
-        long totalOrders = orders != null ? orders.size() : 0;
+        Object body = resp.getBody();
+        List<Map<String, Object>> orders = extractListFromBody(body,
+                "pedidos", "orders", "data");
 
-        double totalAmount = 0;
-        if (orders != null) {
-            for (Map<String, Object> o : orders) {
-                Object price = o.get("price");
-                if (price instanceof Number n) {
-                    totalAmount += n.doubleValue();
-                }
+        long totalOrders = orders.size();
+
+        double totalAmount = 0.0;
+        for (Map<String, Object> o : orders) {
+            Object price = o.get("price");
+            if (price instanceof Number n) {
+                totalAmount += n.doubleValue();
             }
         }
 
@@ -105,11 +108,9 @@ public class ReportService {
         return out;
     }
 
-    /**
-     * ==============================
-     *  MÉTRICAS GENERALES
-     * ==============================
-     */
+    // ============================================================
+    // 3. MÉTRICAS GENERALES
+    // ============================================================
     public SystemMetricsResponse getSystemMetrics(String bearerToken) {
 
         UserReportResponse users = generateUserReport(bearerToken);
@@ -122,11 +123,9 @@ public class ReportService {
         return m;
     }
 
-    /**
-     * ==============================
-     *  LOG EN FIREBASE
-     * ==============================
-     */
+    // ============================================================
+    // 4. LOG EN FIREBASE
+    // ============================================================
     private void logReport(String type, Map<String, Object> data) {
         try {
             DatabaseReference ref = FirebaseDatabase.getInstance()
@@ -139,5 +138,44 @@ public class ReportService {
             ));
         } catch (Exception ignored) {
         }
+    }
+
+    // ============================================================
+    // 5. UTILIDAD PARA EXTRAER LISTAS SEGÚN LA FORMA DEL JSON
+    // ============================================================
+    @SuppressWarnings("unchecked")
+    private List<Map<String, Object>> extractListFromBody(Object body, String... possibleKeys) {
+        if (body == null) {
+            return Collections.emptyList();
+        }
+
+        // Caso 1: el JSON era directamente un arreglo [ { ... }, { ... } ]
+        if (body instanceof List<?> list) {
+            List<Map<String, Object>> out = new ArrayList<>();
+            for (Object elem : list) {
+                if (elem instanceof Map<?, ?> m) {
+                    out.add((Map<String, Object>) m);
+                }
+            }
+            return out;
+        }
+
+        // Caso 2: el JSON es un objeto { ... } con una propiedad que contiene la lista
+        if (body instanceof Map<?, ?> mapBody) {
+            for (String key : possibleKeys) {
+                Object inner = mapBody.get(key);
+                if (inner instanceof List<?> list) {
+                    List<Map<String, Object>> out = new ArrayList<>();
+                    for (Object elem : list) {
+                        if (elem instanceof Map<?, ?> m) {
+                            out.add((Map<String, Object>) m);
+                        }
+                    }
+                    return out;
+                }
+            }
+        }
+
+        return Collections.emptyList();
     }
 }

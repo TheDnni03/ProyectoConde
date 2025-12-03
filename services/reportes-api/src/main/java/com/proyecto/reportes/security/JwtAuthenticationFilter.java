@@ -45,10 +45,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 auth.setDetails(claims);
                 SecurityContextHolder.getContext().setAuthentication(auth);
 
-            } catch (Exception e) {
-                // Token inválido: no autenticamos
-                SecurityContextHolder.clearContext();
-            }
+                } catch (Exception e) {
+                    System.out.println("ERROR JWT reportes-api: " + e.getClass().getSimpleName() + " - " + e.getMessage());
+                    SecurityContextHolder.clearContext();
+                }
+
         }
 
         filterChain.doFilter(request, response);

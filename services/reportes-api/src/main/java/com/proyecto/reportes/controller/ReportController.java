@@ -16,6 +16,8 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.io.StringWriter;
+import java.util.List;
+import java.util.Map;
 
 @RestController
 public class ReportController {
@@ -26,7 +28,6 @@ public class ReportController {
         this.reportService = reportService;
     }
 
-    // 1. Generar reporte de usuarios
     @GetMapping("/reports/users")
     public UserReportResponse usersReport(
             @RequestHeader(HttpHeaders.AUTHORIZATION) String authHeader,
@@ -35,7 +36,6 @@ public class ReportController {
         return reportService.generateUserReport(authHeader);
     }
 
-    // 2. Generar reporte de pedidos
     @GetMapping("/reports/orders")
     public OrderReportResponse ordersReport(
             @RequestHeader(HttpHeaders.AUTHORIZATION) String authHeader,
@@ -44,7 +44,6 @@ public class ReportController {
         return reportService.generateOrderReport(authHeader);
     }
 
-    // 3. Obtener métricas del sistema
     @GetMapping("/reports/metrics")
     public SystemMetricsResponse metrics(
             @RequestHeader(HttpHeaders.AUTHORIZATION) String authHeader,
@@ -53,7 +52,9 @@ public class ReportController {
         return reportService.getSystemMetrics(authHeader);
     }
 
-    // 4. Exportar datos a CSV
+    // =============================
+    // EXPORTAR CSV
+    // =============================
     @GetMapping("/reports/export/{type}")
     public ResponseEntity<String> exportCsv(
             @PathVariable String type,
@@ -65,22 +66,33 @@ public class ReportController {
 
         if ("users".equalsIgnoreCase(type)) {
             var rep = reportService.generateUserReport(authHeader);
-            csv = new CSVPrinter(out, CSVFormat.DEFAULT.withHeader("id", "email", "name"));
+
+            csv = new CSVPrinter(out,
+                    CSVFormat.DEFAULT.withHeader("id", "email", "name"));
 
             if (rep.getUsers() != null) {
-                for (var u : rep.getUsers()) {
-                    csv.printRecord(
-                            u.get("id"),
-                            u.get("email"),
-                            u.get("name")
-                    );
+                for (Map<String, Object> u : rep.getUsers()) {
+
+                    Object id = findByKeyFragment(u, "id", "uid");
+
+                    Object email = findByKeyFragment(u,
+                            "mail", "correo", "email");
+
+                    Object name = findByKeyFragment(u,
+                            "name", "nombre", "fullname", "displayname");
+
+                    csv.printRecord(id, email, name);
                 }
             }
+
         } else if ("orders".equalsIgnoreCase(type)) {
             var rep = reportService.generateOrderReport(authHeader);
-            csv = new CSVPrinter(out, CSVFormat.DEFAULT.withHeader("id", "product_id", "price", "address"));
+
+            csv = new CSVPrinter(out,
+                    CSVFormat.DEFAULT.withHeader("id", "product_id", "price", "address"));
+
             if (rep.getOrders() != null) {
-                for (var o : rep.getOrders()) {
+                for (Map<String, Object> o : rep.getOrders()) {
                     csv.printRecord(
                             o.get("id"),
                             o.get("product_id"),
@@ -90,7 +102,8 @@ public class ReportController {
                 }
             }
         } else {
-            return ResponseEntity.badRequest().body("Tipo de exportación inválido (usa users u orders)");
+            return ResponseEntity.badRequest()
+                    .body("Tipo de exportación inválido (usa users u orders)");
         }
 
         csv.flush();
@@ -100,5 +113,49 @@ public class ReportController {
                         "attachment; filename=\"" + type + "_report.csv\"")
                 .contentType(MediaType.TEXT_PLAIN)
                 .body(out.toString());
+    }
+
+    // ============================================
+    // Busca recursivamente un valor por fragmento
+    // de nombre de llave (soporta anidado)
+    // ============================================
+    @SuppressWarnings("unchecked")
+    private Object findByKeyFragment(Object obj, String... fragments) {
+        if (obj == null) return null;
+
+        // Si es directamente un valor simple
+        if (!(obj instanceof Map<?, ?>) && !(obj instanceof List<?>)) {
+            return null;
+        }
+
+        // Caso 1: Map
+        if (obj instanceof Map<?, ?> map) {
+            // primero revisamos las llaves de este nivel
+            for (Map.Entry<?, ?> e : map.entrySet()) {
+                String key = String.valueOf(e.getKey());
+                String lk = key.toLowerCase();
+
+                for (String f : fragments) {
+                    if (lk.contains(f.toLowerCase())) {
+                        return e.getValue();
+                    }
+                }
+            }
+            // después buscamos dentro de los valores (por si están anidados)
+            for (Object value : map.values()) {
+                Object found = findByKeyFragment(value, fragments);
+                if (found != null) return found;
+            }
+        }
+
+        // Caso 2: Lista (por si hay objetos dentro de arrays)
+        if (obj instanceof List<?> list) {
+            for (Object item : list) {
+                Object found = findByKeyFragment(item, fragments);
+                if (found != null) return found;
+            }
+        }
+
+        return null;
     }
 }
