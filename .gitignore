@@ -10,3 +10,18 @@ services/notificaciones/config/firebase_credentials.json
 *.key
 *.pem
 *.p12
+
+# Maven / Spring Boot
+target/
+*.class
+*.jar
+*.war
+
+# Logs
+*.log
+
+# VS Code
+.vscode/
+
+# Sistema
+.DS_Store
